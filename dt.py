@@ -1,21 +1,19 @@
-from __future__ import print_function
-
-import os
-import subprocess
-import csv
-
-# import pandas as pd
-import numpy as np
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-
-# from sklearn import tree
-import pydotplus 
- 
 """
 Decision Trees are non-parametric supervised learning method used to for classification and regression. 
 scikit-learn uses an optimised version of the CART (Classification and Regression Trees) algorithm to form decision trees.
 CART constructs binary trees using the feature and threshold that yield the largest information gain at each node. 
 """
+
+import os
+import subprocess
+import csv
+
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn import cross_validation
+
+import numpy as np
+import pydotplus 
+ 
 
 def read_training_data(fname):
 	# columns --> 1: SeriousDlqin2yrs, 2: RevolvingUtilizationOfUnsecuredLines, 3: age, 4: NumberOfTime30-59DaysPastDueNotWorse
@@ -26,10 +24,8 @@ def read_training_data(fname):
 	data = []
 	csv_reader = csv.reader(open(fname))
 	for line in csv_reader:
-	    # append_line = [line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9], line[10]]
 	    # line[0] is the row label
 	    append_line = [line[i] for i in range(col_start,col_end)]
-	    # print ("append line is %s" % append_line)
 	    data.append(append_line)
 
 	return data
