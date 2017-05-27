@@ -109,36 +109,37 @@ def knn(train_file, k=15):
 	y = [j[0] for j in data] # classifications for the data
 	# dt = tree.DecisionTreeClassifier(min_samples_split=20, random_state=99)
 
-	for weights in ['uniform', 'distance']:
-	    # we create an instance of Neighbours Classifier and fit the data.
-	    clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
-	    clf.fit(x, y)
+	# for weights in ['uniform', 'distance']:
+	#     # we create an instance of Neighbours Classifier and fit the data.
+	#     clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
+	#     clf.fit(x, y)
 
-	    # Plot the decision boundary. For that, we will assign a color to each
-	    # point in the mesh [x_min, x_max]x[y_min, y_max].
-	    x_min, x_max = x[:, 0].min() - 1, x[:, 0].max() + 1
-	    y_min, y_max = x[:, 1].min() - 1, x[:, 1].max() + 1
-	    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
-	                         np.arange(y_min, y_max, h))
-	    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+	#     # Plot the decision boundary. For that, we will assign a color to each
+	#     # point in the mesh [x_min, x_max]x[y_min, y_max].
+	#     x_min, x_max = x[:, 0].min() - 1, x[:, 0].max() + 1
+	#     y_min, y_max = x[:, 1].min() - 1, x[:, 1].max() + 1
+	#     xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+	#                          np.arange(y_min, y_max, h))
+	#     Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
 
-	    # Put the result into a color plot
-	    Z = Z.reshape(xx.shape)
-	    plt.figure()
-	    plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
+	#     # Put the result into a color plot
+	#     Z = Z.reshape(xx.shape)
+	#     plt.figure()
+	#     plt.pcolormesh(xx, yy, Z, cmap=cmap_light)
 
-	    # Plot also the training points
-	    plt.scatter(X[:, 0], X[:, 1], c=y, cmap=cmap_bold)
-	    plt.xlim(xx.min(), xx.max())
-	    plt.ylim(yy.min(), yy.max())
-	    plt.title("3-Class classification (k = %i, weights = '%s')"
-	              % (n_neighbors, weights))
+	#     # Plot also the training points
+	#     plt.scatter(x[:, 0], x[:, 1], c=y, cmap=cmap_bold)
+	#     plt.xlim(xx.min(), xx.max())
+	#     plt.ylim(yy.min(), yy.max())
+	#     plt.title("3-Class classification (k = %i, weights = '%s')"
+	#               % (n_neighbors, weights))
 
-	plt.show()
+	# plt.show()
 
-	# clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights)
-	# scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
-	# print("KNN 10 Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
+	weights = ['uniform', 'distance']
+	clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[0])
+	scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
+	print("KNN 10 Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
 
 def decision_tree(train_file, output_file=None, colored=True, graph=False):
