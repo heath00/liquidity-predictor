@@ -4,34 +4,43 @@ import csv
 
 import numpy as np
 import pydotplus 
+from sklearn.model_selection import cross_val_score
  
 # for decision trees
 from sklearn import tree
-from sklearn.tree import DecisionTreeClassifier, export_graphviz
-# from sklearn import cross_validation
-# from sklearn.cross_validation import cross_val_score
-from sklearn.model_selection import cross_val_score
 
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
+
 from sklearn import neighbors, datasets
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
 
 
-# ClASSIFIERS : {DecisionTree, KNN, NaiveBayes, Linear Regression}
+# ClASSIFIERS : {DecisionTree, KNN, MLP, NaiveBayes, Linear Regression}
 
 def read_training_data(fname):
 	# columns --> 1: SeriousDlqin2yrs, 2: RevolvingUtilizationOfUnsecuredLines, 3: age, 4: NumberOfTime30-59DaysPastDueNotWorse
 	#		5: DebtRatio, 6: MonthlyIncome, 7: NumberOfOpenCreditLinesAndLoans, 8: NumberOfTimes90DaysLate, 9: NumberRealEstateLoansOrLines
 	#		10: NumberOfTime60-89DaysPastDueNotWorse, 11: NumberOfDependents
-	col_start = 1
-	col_end = 10
+	col_start = 0
+	col_end = 11
+	# j = 0
 	data = []
 	f = open(fname)
 	csv_reader = csv.reader(f)
-	for line in csv_reader:
-	    # line[0] is the row label
-	    append_line = [line[i] for i in range(col_start,col_end)]
-	    data.append(append_line)
+	for j, line in enumerate(csv_reader):
+		if j == 0:
+			append_line = [line[header] for header in range(col_start, col_end)]
+			print (append_line)
+		if j != 0:
+			append_line = [float(line[cell]) for cell in range(col_start,col_end)]
+			if j < 10:
+				print (append_line)
+		data.append(append_line)
 	f.close()
 	return data
 
@@ -40,12 +49,12 @@ def get_means(data):
 	get the mean values of each columns to fill missing attribute values
 	input:
 		a list of lists representing the excel data
-
+ 
 	returns:
 		single list of means associated with each column
 	"""
-	totals = [[] for x in range(0, 9)]
-	entries = [0] * 9
+	totals = [[] for x in range(0, 11)]
+	entries = [0] * 11
 	# data is 2D array -- get each val
 	header = 0
 	for d in data:
@@ -58,12 +67,9 @@ def get_means(data):
 				entries[i] += 1
 	
 	sums = [sum(total) for total in totals]
-	# print ("sums are %s" % sums)
-	# print ("entries are %s" % entries)
-	means = [sums[i]/float(entries[i]) for i in range(0,9)]
-	# print ("means are %s" % means)
+	means = [sums[i]/float(entries[i]) for i in range(0,11)]
+	# means = [total.mean() for total in totals]
 	return means
-
 
 def compute_missing_data(data):
 	"""
@@ -83,9 +89,89 @@ def compute_missing_data(data):
 				# print ("setting value to mean of %s" % means[j])
 	return data				
 
+def mlp(x,y):
+	clf = MLPClassifier(solver='lbfgs', alpha=1e-5,
+                     hidden_layer_sizes=(5, 2), random_state=1)
+	scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
+	print("MLP (alpha=1e-5) 10 Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
+def mlp_graphs(X, y):
+	h = .02  # step size in the mesh
 
-def knn(train_file, k=15):
+	alphas = np.logspace(-5, 3, 5)
+	names = []
+	for i in alphas:
+	    names.append('alpha ' + str(i))
+
+	classifiers = []
+	for i in alphas:
+	    classifiers.append(MLPClassifier(alpha=i, random_state=1))
+
+	datasets = [(X, y)]
+	figure = plt.figure(figsize=(17, 9))
+	
+	i = 1
+	# iterate over datasets
+	for X, y in datasets:
+	    # preprocess dataset, split into training and test part
+	    X = StandardScaler().fit_transform(X)
+	    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4)
+
+	    x_min, x_max = X[:, 0].min() - .5, X[:, 0].max() + .5
+	    y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
+	    xx, yy = np.meshgrid(np.arange(x_min, x_max, h),
+	                         np.arange(y_min, y_max, h))
+
+	    # just plot the dataset first
+	    cm = plt.cm.RdBu
+	    cm_bright = ListedColormap(['#FF0000', '#0000FF'])
+	    ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
+	    # Plot the training points
+	    ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright)
+	    # and testing points
+	    ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright, alpha=0.6)
+	    ax.set_xlim(xx.min(), xx.max())
+	    ax.set_ylim(yy.min(), yy.max())
+	    ax.set_xticks(())
+	    ax.set_yticks(())
+	    i += 1
+
+	    # iterate over classifiers
+	    for name, clf in zip(names, classifiers):
+	        ax = plt.subplot(len(datasets), len(classifiers) + 1, i)
+	        clf.fit(X_train, y_train)
+	        score = clf.score(X_test, y_test)
+
+	        # Plot the decision boundary. For that, we will assign a color to each
+	        # point in the mesh [x_min, x_max]x[y_min, y_max].
+	        if hasattr(clf, "decision_function"):
+	            Z = clf.decision_function(np.c_[xx.ravel(), yy.ravel()])
+	        else:
+	            Z = clf.predict_proba(np.c_[xx.ravel(), yy.ravel()])[:, 1]
+
+	        # Put the result into a color plot
+	        Z = Z.reshape(xx.shape)
+	        ax.contourf(xx, yy, Z, cmap=cm, alpha=.8)
+
+	        # Plot also the training points
+	        ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap=cm_bright)
+	        # and testing points
+	        ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap=cm_bright,
+	                   alpha=0.6)
+
+	        ax.set_xlim(xx.min(), xx.max())
+	        ax.set_ylim(yy.min(), yy.max())
+	        ax.set_xticks(())
+	        ax.set_yticks(())
+	        ax.set_title(name)
+	        ax.text(xx.max() - .3, yy.min() + .3, ('%.2f' % score).lstrip('0'),
+	                size=15, horizontalalignment='right')
+	        i += 1
+
+	figure.subplots_adjust(left=.02, right=.98)
+	plt.show()
+
+def knn(x, y, k=15):
 	"""
 	inputs:
 		train_file: the file to train and test the classifier
@@ -99,15 +185,6 @@ def knn(train_file, k=15):
 		# Create color maps
 	cmap_light = ListedColormap(['#FFAAAA', '#AAFFAA', '#AAAAFF'])
 	cmap_bold = ListedColormap(['#FF0000', '#00FF00', '#0000FF'])
-
-	d_missing = read_training_data(train_file)
-	d = compute_missing_data(d_missing)
-	headers = d[0]
-	# print("headers are %s" % headers)
-	data = d[1:]
-	x = [i[1:] for i in data] # data with the class attribute missing
-	y = [j[0] for j in data] # classifications for the data
-	# dt = tree.DecisionTreeClassifier(min_samples_split=20, random_state=99)
 
 	# for weights in ['uniform', 'distance']:
 	#     # we create an instance of Neighbours Classifier and fit the data.
@@ -141,8 +218,24 @@ def knn(train_file, k=15):
 	scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
 	print("KNN 10 Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
+def knn_graph(x, y):
+	x_axis =[]
+	y_axis = []
+	for k in range(1,30):
+		n_neighbors = k
+		h = .02  # step size in the mesh
+		weights = ['uniform', 'distance']
+		clf = neighbors.KNeighborsClassifier(n_neighbors, weights=weights[1])
+		scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
+		y_axis.append(scores.mean())
+		x_axis.append(k)
+		print("%dNN 10-fold Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (k, scores.mean(), scores.std() * 2))
 
-def decision_tree(train_file, output_file=None, colored=True, graph=False):
+
+	plt.plot(x_axis, y_axis)
+	plt.show()
+
+def decision_tree(x, y, output_file=None, colored=True, graph=False):
 	"""
 	Decision Trees are non-parametric supervised learning method used to for classification and regression. 
 	scikit-learn uses an optimised version of the CART (Classification and Regression Trees) algorithm to form decision trees.
@@ -163,15 +256,7 @@ def decision_tree(train_file, output_file=None, colored=True, graph=False):
 	Returns:
 		Nothing
 	"""
-	d_missing = read_training_data(train_file)
-	d = compute_missing_data(d_missing)
-	headers = d[0]
-	# print("headers are %s" % headers)
-	data = d[1:]
 
-	x = [i[1:] for i in data] # data with the class attribute missing
-	y = [j[0] for j in data] # classifications for the data
-	# dt = tree.DecisionTreeClassifier(min_samples_split=20, random_state=99)
 
 	if graph:
 		if output_file is None:
@@ -199,14 +284,24 @@ def decision_tree(train_file, output_file=None, colored=True, graph=False):
 	scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
 	print("Decison Tree 10-fold Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
-
 def main():
-	train_file = 'data/cs-training.csv'
-	decision_tree(train_file)
-	knn(train_file, k=10)
+	# train_file = 'data/cs-training.csv'
+	train_file = 'data/training_no_missing_attrs.csv'
+	d = read_training_data(train_file)
+	# d = compute_missing_data(d_missing)
+	headers = d[0]
+	print("headers are %s" % headers)
+	data = d[1:]
+	x = [attrs[1:] for attrs in data] # data with the class attribute missing
+	y = [_class[0] for _class in data] # classifications for the data
+	assert len(x) == len(y)
+	print (x[0])
+	print (y[0])
+	# decision_tree(x, y)
+	# knn(x, y, k=15)
+	# knn_graph(x, y)
+	mlp(x,y)
+	# mlp_graphs(x, y)
 
 if __name__ == '__main__':
 	main()
-
-
-

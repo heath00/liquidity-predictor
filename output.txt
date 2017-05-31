@@ -1,0 +1,42 @@
+
+Decison Tree 10-fold Cross Validation Accuracy: 0.90 (+/- 0.00)
+
+MLP 10-fold Cross Validaton Accuracy: 
+
+Linear Regression 10-fold Cross Validation Accuracy:
+
+Naive Bayes 10-fold Cross Validation Accuracy: 
+
+weights by: ['distance']
+1NN 10 Cross Validation Accuracy: 0.90 (+/- 0.00),
+2NN 10 Cross Validation Accuracy: 0.90 (+/- 0.00),
+3NN 10 Cross Validation Accuracy: 0.92 (+/- 0.00),
+4NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+5NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+6NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+7NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+8NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+9NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+10NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+11NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+12NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+13NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+14NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+15NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+16NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+17NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+18NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+19NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+20NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+21NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+22NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+23NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+24NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+25NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+26NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+27NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+28NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+29NN 10 Cross Validation Accuracy: 0.93 (+/- 0.00),
+
+
+weights by: ['uniform']
