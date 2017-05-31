@@ -96,7 +96,7 @@ def compute_missing_data(data):
 
 def mlp(x,y):
 	clf = MLPClassifier(solver='lbfgs', alpha=1e-5,
-                     hidden_layer_sizes=(5, 2), random_state=1)
+                     hidden_layer_sizes=(100,100,100,100,100,100,100,100,100,100,100,100,100), random_state=1)
 	scores = cross_val_score(estimator=clf, X=x, y=y, cv=10, n_jobs=4)
 	print("MLP (alpha=1e-5) 10 Cross Validation Accuracy: %0.2f (+/- %0.2f)" % (scores.mean(), scores.std() * 2))
 
@@ -319,7 +319,7 @@ def main():
 	# knn(np_x, np_y, k=15)
 	# knn_graph(x, y)
 	mlp(np_x,np_y)
-	# mlp_graphs(x, y)
+	# mlp_graphs(np_x, np_y)
 
 if __name__ == '__main__':
 	main()
