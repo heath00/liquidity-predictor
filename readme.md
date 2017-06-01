@@ -15,6 +15,6 @@ EECS 349 Machine Learning, Northwestern University
 
 
 # Final Report
-[Final Report](https://heath00.github.io/liquidity-predictor/a.pdf)
+[Final Report](a.pdf)
 
 
