@@ -15,6 +15,6 @@ EECS 349 Machine Learning, Northwestern University
 
 
 # Final Report
-{{"final.pdf" | relative_url}}
+
 
 
