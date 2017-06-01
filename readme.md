@@ -6,7 +6,9 @@ liquidity.
 # Abstract
 
 Nicholas Kotsiantos - nicholaskotsiantos2019@u.northwestern.edu
+
 Heath Reineke - heathreineke2018@u.northwestern.edu
+
 David Wallach - davidwallach2018@u.northwestern.edu
 
 
