@@ -14,4 +14,7 @@ David Wallach - davidwallach2018@u.northwestern.edu
 EECS 349 Machine Learning, Northwestern University
 
 
+# Final Report
+{{"final.pdf" | relative_url}}
+
 
