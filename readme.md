@@ -11,5 +11,7 @@ Heath Reineke - heathreineke2018@u.northwestern.edu
 
 David Wallach - davidwallach2018@u.northwestern.edu
 
+EECS 349 Machine Learning, Northwestern University
+
 
 
